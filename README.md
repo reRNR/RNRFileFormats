@@ -49,18 +49,7 @@
 
 * * * 
 # About
-Hard Truck 1 (1998), Hard Truck 2 King of the Road 1.3 and RignRoll (2010) games file formats. Current progress status [see Issues](https://github.com/AlexKimov/HT2-RnR-tools/issues). 
-
-Formats description will be [there (Wiki)](https://github.com/AlexKimov/HT2-RnR-tools/wiki).
-
-#### Roadmap
-
-###### Hard Truck 1/2
-1. **b3D** format, evereything else is ready to use (almost).
-
-2. Formats documentation in english.
-
-3. Conversion to other formats.
+Hard Truck 1 (1998), Hard Truck 2 King of the Road 1.3 and RignRoll (2010) games file formats.
 
 #### Hard Truck 1 (1998)
 
