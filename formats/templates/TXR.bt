@@ -11,6 +11,13 @@
 //   History: 
 //------------------------------------------------
 
+local float w, h;
+local uint pos, offset, size;
+
+const int LVMP_FOURCC = 1347245644; 
+const int PFRM_FOURCC = 1297237584;
+const int ENDR_FOURCC = 1380208197;
+
 typedef enum <char> {
   LOFF,
   PFRM,
@@ -18,22 +25,29 @@ typedef enum <char> {
   ENDR
 } IDENTIFIER;
 
+// 
+typedef struct {
+  IDENTIFIER Name[4];
+  UINT SectionSize;  
+} ENDR;
+
 // mipmaps
 typedef struct {
   IDENTIFIER Name[4];
   UINT SectionSize;
+  pos = FTell();
   UINT Count;
   UINT Width;
   UINT Height; 
   UINT bitDepth; 
-
-  local uint w, h;
 
   w = Width; 
   h = Height;
   while (w >= 1) 
   {
     typedef struct {
+      if (bitDepth == 4) 
+        UINT Pixel;
       if (bitDepth == 2) 
         UINT16 Pixel;
       else
@@ -47,7 +61,9 @@ typedef struct {
     w = w/2; h = h/2;
   };
 
-  BYTE A[2];  
+  size = SectionSize + 3;
+  offset = ((size & 255) & 252) | (((size >> 8) << 8));
+  FSeek(pos + offset);
 } LVMP;
 
 // bit masks
@@ -63,6 +79,12 @@ typedef struct {
     BYTE Empty[12];
 } PFRM;
 
+typedef struct {
+  IDENTIFIER id[4];
+  UINT SectionSize;
+  UINT Offset;
+} LOFF;
+
 BitfieldDisablePadding();
 
 typedef struct { 
@@ -71,6 +93,12 @@ typedef struct {
   UBYTE Green: 6;
   UBYTE Blue: 5;
 } RGB16;
+
+typedef struct { 
+  UBYTE Red;
+  UBYTE Green;
+  UBYTE Blue;
+} RGB24;
 
 typedef struct {          
   UBYTE  IDLength;
@@ -94,32 +122,31 @@ typedef struct {
   ubyte B;
 } PALETTE;
 
-
 TGA_HEADER header;
 
 if (header.IDLength == 12) 
-{
-    IDENTIFIER id[4];
-    UINT SectionSize;
-    UINT Offset;
-};
+  LOFF loff;
+
+w = header.Width;
+h = header.Height;
  
 if (header.PixelDepth == 8)
 { 
-    PALETTE palette[256];
-    UBYTE Data[23*header.Width/23*header.Height]; }
-else
-    RGB16 Pixel[23*header.Width/23*header.Height];
+  PALETTE palette[256];
+  UBYTE Data[h * w]; 
+} 
+else if (header.PixelDepth == 16)
+  RGB16 Pixel[h * w];
+else 
+  RGB24 Pixel[h * w];
 
-if (header.IDLength == 12) 
-{
-  local char Name[4];
-  ReadBytes(Name, FTell(), 4);
-  if (Name == "LVMP") 
-    LVMP lvmpid;
-  else 
-    FSkip(-4);
-
-  if (header.PixelDepth == 16)
-    PFRM pfrmid;
-};
+while (!FEof())
+  switch (ReadUInt(FTell())) 
+  {
+    case LVMP_FOURCC: 
+      LVMP lvmp; break;
+    case PFRM_FOURCC: 
+      PFRM pfrm; break;
+    case ENDR_FOURCC: 
+      ENDR endr; break;
+  } 
