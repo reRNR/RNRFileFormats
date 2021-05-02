@@ -1,0 +1,175 @@
+digraph {
+	rankdir=LR;
+	node [shape=plaintext];
+	subgraph cluster__hard_truck_2_txr {
+		label="HardTruck2Txr";
+		graph[style=dotted];
+
+		hard_truck_2_txr__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+			<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+			<TR><TD PORT="header_pos">0</TD><TD PORT="header_size">18</TD><TD>TgaHeader</TD><TD PORT="header_type">header</TD></TR>
+			<TR><TD PORT="loff_pos">18</TD><TD PORT="loff_size">12</TD><TD>LoffSection</TD><TD PORT="loff_type">loff</TD></TR>
+			<TR><TD PORT="pixel_data_pos">30</TD><TD PORT="pixel_data_size">...</TD><TD>switch (header.pixel_depth)</TD><TD PORT="pixel_data_type">pixel_data</TD></TR>
+			<TR><TD PORT="sections_pos">...</TD><TD PORT="sections_size">...</TD><TD>TxrSections</TD><TD PORT="sections_type">sections</TD></TR>
+		</TABLE>>];
+hard_truck_2_txr__seq_pixel_data_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>8</TD><TD PORT="case0">PalettedImage</TD></TR>
+	<TR><TD>16</TD><TD PORT="case1">RgbaImage</TD></TR>
+</TABLE>>];
+		subgraph cluster__rgba_image {
+			label="HardTruck2Txr::RgbaImage";
+			graph[style=dotted];
+
+			rgba_image__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="data_pos">0</TD><TD PORT="data_size">((_root.header.width * _root.header.height) * (_root.header.pixel_depth / 8))</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__loff_section {
+			label="HardTruck2Txr::LoffSection";
+			graph[style=dotted];
+
+			loff_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="name_pos">0</TD><TD PORT="name_size">4</TD><TD>str(ASCII)</TD><TD PORT="name_type">name</TD></TR>
+				<TR><TD PORT="size_pos">4</TD><TD PORT="size_size">4</TD><TD>u4le</TD><TD PORT="size_type">size</TD></TR>
+				<TR><TD PORT="offset_pos">8</TD><TD PORT="offset_size">4</TD><TD>u4le</TD><TD PORT="offset_type">offset</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__paletted_image {
+			label="HardTruck2Txr::PalettedImage";
+			graph[style=dotted];
+
+			paletted_image__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="palette_pos">0</TD><TD PORT="palette_size">768</TD><TD></TD><TD PORT="palette_type">palette</TD></TR>
+				<TR><TD PORT="indexes_pos">768</TD><TD PORT="indexes_size">(_root.header.width * _root.header.height)</TD><TD></TD><TD PORT="indexes_type">indexes</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__tga_header {
+			label="HardTruck2Txr::TgaHeader";
+			graph[style=dotted];
+
+			tga_header__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="id_length_pos">0</TD><TD PORT="id_length_size">1</TD><TD>u1</TD><TD PORT="id_length_type">id_length</TD></TR>
+				<TR><TD PORT="color_map_type_pos">1</TD><TD PORT="color_map_type_size">1</TD><TD>u1</TD><TD PORT="color_map_type_type">color_map_type</TD></TR>
+				<TR><TD PORT="image_type_pos">2</TD><TD PORT="image_type_size">1</TD><TD>u1</TD><TD PORT="image_type_type">image_type</TD></TR>
+				<TR><TD PORT="first_index_entry_pos">3</TD><TD PORT="first_index_entry_size">2</TD><TD>u2le</TD><TD PORT="first_index_entry_type">first_index_entry</TD></TR>
+				<TR><TD PORT="color_map_length_pos">5</TD><TD PORT="color_map_length_size">2</TD><TD>u2le</TD><TD PORT="color_map_length_type">color_map_length</TD></TR>
+				<TR><TD PORT="color_map_entry_size_pos">7</TD><TD PORT="color_map_entry_size_size">1</TD><TD>u1</TD><TD PORT="color_map_entry_size_type">color_map_entry_size</TD></TR>
+				<TR><TD PORT="x_origin_pos">8</TD><TD PORT="x_origin_size">2</TD><TD>u2le</TD><TD PORT="x_origin_type">x_origin</TD></TR>
+				<TR><TD PORT="y_origin_pos">10</TD><TD PORT="y_origin_size">2</TD><TD>u2le</TD><TD PORT="y_origin_type">y_origin</TD></TR>
+				<TR><TD PORT="width_pos">12</TD><TD PORT="width_size">2</TD><TD>u2le</TD><TD PORT="width_type">width</TD></TR>
+				<TR><TD PORT="height_pos">14</TD><TD PORT="height_size">2</TD><TD>u2le</TD><TD PORT="height_type">height</TD></TR>
+				<TR><TD PORT="pixel_depth_pos">16</TD><TD PORT="pixel_depth_size">1</TD><TD>u1</TD><TD PORT="pixel_depth_type">pixel_depth</TD></TR>
+				<TR><TD PORT="image_descriptor_pos">17</TD><TD PORT="image_descriptor_size">1</TD><TD>u1</TD><TD PORT="image_descriptor_type">image_descriptor</TD></TR>
+			</TABLE>>];
+		}
+		subgraph cluster__txr_sections {
+			label="HardTruck2Txr::TxrSections";
+			graph[style=dotted];
+
+			txr_sections__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+				<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+				<TR><TD PORT="body_pos">0</TD><TD PORT="body_size">...</TD><TD>Section</TD><TD PORT="body_type">body</TD></TR>
+				<TR><TD COLSPAN="4" PORT="body__repeat">repeat to end of stream</TD></TR>
+			</TABLE>>];
+			subgraph cluster__section {
+				label="HardTruck2Txr::TxrSections::Section";
+				graph[style=dotted];
+
+				section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+					<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+					<TR><TD PORT="fourcc_pos">0</TD><TD PORT="fourcc_size">4</TD><TD>u4le?SectionNames</TD><TD PORT="fourcc_type">fourcc</TD></TR>
+					<TR><TD PORT="len_pos">4</TD><TD PORT="len_size">4</TD><TD>u4le</TD><TD PORT="len_type">len</TD></TR>
+					<TR><TD PORT="section_pos">8</TD><TD PORT="section_size">...</TD><TD>switch (fourcc)</TD><TD PORT="section_type">section</TD></TR>
+				</TABLE>>];
+section__seq_section_switch [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+	<TR><TD BGCOLOR="#F0F2E4">case</TD><TD BGCOLOR="#F0F2E4">type</TD></TR>
+	<TR><TD>:section_names_lvmp</TD><TD PORT="case0">LvmpSection</TD></TR>
+	<TR><TD>:section_names_pfrm</TD><TD PORT="case1">PfrmSection</TD></TR>
+</TABLE>>];
+				subgraph cluster__lvmp_section {
+					label="HardTruck2Txr::TxrSections::Section::LvmpSection";
+					graph[style=dotted];
+
+					lvmp_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+						<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+						<TR><TD PORT="num_mmaps_pos">0</TD><TD PORT="num_mmaps_size">4</TD><TD>u4le</TD><TD PORT="num_mmaps_type">num_mmaps</TD></TR>
+						<TR><TD PORT="width_pos">4</TD><TD PORT="width_size">4</TD><TD>u4le</TD><TD PORT="width_type">width</TD></TR>
+						<TR><TD PORT="height_pos">8</TD><TD PORT="height_size">4</TD><TD>u4le</TD><TD PORT="height_type">height</TD></TR>
+						<TR><TD PORT="depth_pos">12</TD><TD PORT="depth_size">4</TD><TD>u4le</TD><TD PORT="depth_type">depth</TD></TR>
+						<TR><TD PORT="mmap_pos">16</TD><TD PORT="mmap_size">((width * height) * depth)</TD><TD></TD><TD PORT="mmap_type">mmap</TD></TR>
+						<TR><TD PORT="mip_maps_pos">...</TD><TD PORT="mip_maps_size">...</TD><TD>Mipmap</TD><TD PORT="mip_maps_type">mip_maps</TD></TR>
+						<TR><TD COLSPAN="4" PORT="mip_maps__repeat">repeat (num_mmaps - 1) times</TD></TR>
+						<TR><TD PORT="padding_pos">...</TD><TD PORT="padding_size">(((((_parent.len + 3) &amp; 255) &amp; 252) | (((_parent.len + 3) &gt;&gt; 8) &lt;&lt; 8)) - _parent.len)</TD><TD></TD><TD PORT="padding_type">padding</TD></TR>
+					</TABLE>>];
+					subgraph cluster__mipmap {
+						label="HardTruck2Txr::TxrSections::Section::LvmpSection::Mipmap";
+						graph[style=dotted];
+
+						mipmap__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+							<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+							<TR><TD PORT="data_pos">0</TD><TD PORT="data_size">((w * h) * _parent.depth)</TD><TD></TD><TD PORT="data_type">data</TD></TR>
+						</TABLE>>];
+						mipmap__inst__h [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+							<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+							<TR><TD>h</TD><TD>(_parent.width / (2 &lt;&lt; i))</TD></TR>
+						</TABLE>>];
+						mipmap__inst__w [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+							<TR><TD BGCOLOR="#E0FFE0">id</TD><TD BGCOLOR="#E0FFE0">value</TD></TR>
+							<TR><TD>w</TD><TD>(_parent.height / (2 &lt;&lt; i))</TD></TR>
+						</TABLE>>];
+					}
+				}
+				subgraph cluster__pfrm_section {
+					label="HardTruck2Txr::TxrSections::Section::PfrmSection";
+					graph[style=dotted];
+
+					pfrm_section__seq [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+						<TR><TD BGCOLOR="#E0FFE0">pos</TD><TD BGCOLOR="#E0FFE0">size</TD><TD BGCOLOR="#E0FFE0">type</TD><TD BGCOLOR="#E0FFE0">id</TD></TR>
+						<TR><TD PORT="red_mask_pos">0</TD><TD PORT="red_mask_size">4</TD><TD>u4le</TD><TD PORT="red_mask_type">red_mask</TD></TR>
+						<TR><TD PORT="green_mask_pos">4</TD><TD PORT="green_mask_size">4</TD><TD>u4le</TD><TD PORT="green_mask_type">green_mask</TD></TR>
+						<TR><TD PORT="blue_mask_pos">8</TD><TD PORT="blue_mask_size">4</TD><TD>u4le</TD><TD PORT="blue_mask_type">blue_mask</TD></TR>
+						<TR><TD PORT="alpha_mask_pos">12</TD><TD PORT="alpha_mask_size">4</TD><TD>u4le</TD><TD PORT="alpha_mask_type">alpha_mask</TD></TR>
+						<TR><TD PORT="unknown_bytes_pos">16</TD><TD PORT="unknown_bytes_size">12</TD><TD></TD><TD PORT="unknown_bytes_type">unknown_bytes</TD></TR>
+					</TABLE>>];
+				}
+			}
+		}
+	}
+	hard_truck_2_txr__seq:header_type -> tga_header__seq [style=bold];
+	hard_truck_2_txr__seq:loff_type -> loff_section__seq [style=bold];
+	hard_truck_2_txr__seq:pixel_data_type -> hard_truck_2_txr__seq_pixel_data_switch [style=bold];
+	hard_truck_2_txr__seq_pixel_data_switch:case0 -> paletted_image__seq [style=bold];
+	hard_truck_2_txr__seq_pixel_data_switch:case1 -> rgba_image__seq [style=bold];
+	tga_header__seq:pixel_depth_type -> hard_truck_2_txr__seq:pixel_data_type [color="#404040"];
+	hard_truck_2_txr__seq:sections_type -> txr_sections__seq [style=bold];
+	tga_header__seq:width_type -> rgba_image__seq:data_size [color="#404040"];
+	tga_header__seq:height_type -> rgba_image__seq:data_size [color="#404040"];
+	tga_header__seq:pixel_depth_type -> rgba_image__seq:data_size [color="#404040"];
+	tga_header__seq:width_type -> paletted_image__seq:indexes_size [color="#404040"];
+	tga_header__seq:height_type -> paletted_image__seq:indexes_size [color="#404040"];
+	txr_sections__seq:body_type -> section__seq [style=bold];
+	section__seq:section_type -> section__seq_section_switch [style=bold];
+	section__seq_section_switch:case0 -> lvmp_section__seq [style=bold];
+	section__seq_section_switch:case1 -> pfrm_section__seq [style=bold];
+	section__seq:fourcc_type -> section__seq:section_type [color="#404040"];
+	lvmp_section__seq:width_type -> lvmp_section__seq:mmap_size [color="#404040"];
+	lvmp_section__seq:height_type -> lvmp_section__seq:mmap_size [color="#404040"];
+	lvmp_section__seq:depth_type -> lvmp_section__seq:mmap_size [color="#404040"];
+	lvmp_section__seq:mip_maps_type -> mipmap__seq [style=bold];
+	lvmp_section__seq:num_mmaps_type -> lvmp_section__seq:mip_maps__repeat [color="#404040"];
+	section__seq:len_type -> lvmp_section__seq:padding_size [color="#404040"];
+	section__seq:len_type -> lvmp_section__seq:padding_size [color="#404040"];
+	section__seq:len_type -> lvmp_section__seq:padding_size [color="#404040"];
+	mipmap__inst__w:w_type -> mipmap__seq:data_size [color="#404040"];
+	mipmap__inst__h:h_type -> mipmap__seq:data_size [color="#404040"];
+	lvmp_section__seq:depth_type -> mipmap__seq:data_size [color="#404040"];
+	lvmp_section__seq:width_type -> mipmap__inst__h [color="#404040"];
+	mipmap__params:i_type -> mipmap__inst__h [color="#404040"];
+	lvmp_section__seq:height_type -> mipmap__inst__w [color="#404040"];
+	mipmap__params:i_type -> mipmap__inst__w [color="#404040"];
+}
