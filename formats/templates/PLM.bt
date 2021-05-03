@@ -107,23 +107,17 @@ typedef struct  {
       IDENTIFIER id[4];
       UINT DataSize;
     } HEADER;
-    if (HEADER.id == "PALT")
-      PALT Palette;
-    else
-    if (HEADER.id == "OPAC")
-      OPAC Opac;
-    else
-    //if (HEADER.id == "OP16")
-    //  OP16 Opac16;
-    //else
-    if (HEADER.id == "FOG")
-      FOG Fog;
-    else
-    //if (HEADER.id == "FO16")
-    //  FO16 Fog16;
-    //else
-    if (HEADER.id == "INTE")
-      INTE Inte;
+
+    switch (HEADER.id) 
+    {
+      case "PALT" : PALT Palette; break;
+      case "OPAC" : OPAC Opac; break;
+      case "FOG"  : FOG Fog; break;
+      case "INTE" : INTE Inte; break;
+      case "IN16" : IN16 In16; break;
+      case "OP16"  : OP16 Opac16; break;
+      case "OPAC"  : OPAC Opac; break;    
+    } 
  }; 
 } PLM_FILE;
 

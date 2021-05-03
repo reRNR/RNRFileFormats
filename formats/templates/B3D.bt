@@ -49,7 +49,7 @@ typedef struct {
     FLOAT Y;
     FLOAT Z;
   } Pos; 
-} TRANSFORMATION_MATRIX <name="Transformation matrix">;
+} MATRIX <name="Transformation matrix">;
 
 typedef struct {
   FLOAT X;
@@ -65,9 +65,9 @@ typedef struct {
 typedef enum <uint> {
   Begin_Chunks = 111,
   End_Chunks = 222,
-  Begin_Chunk = 333,
+  Begin_Node = 333,
   Group_Chunk = 444,
-  End_Chunk = 555
+  End_Node = 555
 } IDENTIFIER <name="Identifier">; 
 
 typedef struct {
@@ -82,11 +82,12 @@ typedef struct {
 typedef struct { 
   VECTOR_3F Position <name="Position">;
   VECTOR_2F UV <name="UV">;
-} VERTEX <name = "Vertex">;
+} VERTEX_POS_UV <name = "Vertex">;
 
-typedef struct (int arraySize) {
-  VERTEX array[arraySize] <optimize=false>;
-} VERTEXE_ATTRIBUTES;
+typedef struct { 
+  VECTOR_3F Position <name="Position">;
+  VECTOR_2F UVW <name="UVW">;
+} VERTEX_POS_UVW <name = "Vertex">;
 
 typedef enum <uint> {
   asphalt = 1,
@@ -109,9 +110,9 @@ struct {
     UINT MatListOffset; // 6 (1/4*24)
     UINT MatListDataSize; // 1/4*(materials list data)
     UINT DataChunksOffset; // 1/4*(materials list data + file header)
-    UINT ChunksSectionSize; // 1/4*(datasize)
+    UINT NodesSectionSize; // 1/4*(datasize)
   } DataSizes <name = "Data sizes">;
-} Header <name="File Header">;
+} HEADER <name="File Header">;
 
 struct {
     UINT MaterialCount <name="Count">;
@@ -122,7 +123,7 @@ struct {
       MATERIAL array[arraySize] <optimize=false>;
     } MATERIAL_Array;       
     MATERIAL_Array Materials(MaterialCount) <name="Materials">;
-} MatList <name="Material List">;
+} MAT_LIST <name="Material List">;
 
 string MatName(MATERIAL &material) {
   return material.String;
@@ -133,7 +134,7 @@ UINT chunkTree(UINT ChildCount) {
   typedef struct {
     UINT ChildCount;
     chunkTree(ChildCount);
-  } CHILD_CHUNKS <name="Child chunks/objects">;
+  } CHILD_NODES <name="Child nodes">;
 
   typedef struct {
     while (true) { 
@@ -185,14 +186,14 @@ UINT chunkTree(UINT ChildCount) {
             FLOAT Z;
           } NORMAL; // ??
           FLOAT Distance; // Radius
-          CHILD_CHUNKS ChildChunks;            
+          CHILD_NODES ChildNodes;            
         }; break;
 
         // container for 3d objects, id = 3 only in Hard Truck 1
         case 3: 
         {
           BOUNDING_SPHERE Sphere;
-          CHILD_CHUNKS ChildChunks;           
+          CHILD_NODES ChildNodes;           
         }; break;
 
         // container for 3d objects
@@ -201,16 +202,16 @@ UINT chunkTree(UINT ChildCount) {
           BOUNDING_SPHERE Sphere;
           char MatrixName[32] <name="Transform matrix">; 
           char UnknownData[32]; // 0000000...
-          CHILD_CHUNKS ChildChunks; 
+          CHILD_NODES ChildNodes; 
         }; break;
     
-        // container for 3d objects
+        // container with child nodes
         case 5: 
         { 
           BOUNDING_SPHERE Sphere; 
-          char GroupName[32] <name="Name">; // name 
+          char ContainerName[32] <name="Name">; // name 
 
-          CHILD_CHUNKS ChildChunks;      
+          CHILD_NODES ChildNodes;      
         }; break;
 
         // Only in Hard Truck 1, Vertex attributes
@@ -220,9 +221,9 @@ UINT chunkTree(UINT ChildCount) {
           char Name[32]; // name 
 
           UINT VertexCount <name="Vertex Count">; 
-          VERTEXE_ATTRIBUTES VertAttributes(VertexCount);
+          VERTEX_POS_UV VertAttributes[VertexCount];
 
-          CHILD_CHUNKS ChildChunks;         
+          CHILD_NODES ChildNodes;         
         }; break;
 
         // Vertex attributes
@@ -231,9 +232,9 @@ UINT chunkTree(UINT ChildCount) {
           char GroupName[32]; // name 
 
           UINT VertexCount <name="Vertex Count">; 
-          VERTEXE_ATTRIBUTES VertAttributes(VertexCount);
+          VERTEX_POS_UV VertAttributes[VertexCount];
 
-          CHILD_CHUNKS ChildChunks; 
+          CHILD_NODES ChildNodes; 
         }; break;
 
         // polygons
@@ -294,7 +295,7 @@ UINT chunkTree(UINT ChildCount) {
             FLOAT Z;
           } NORMAL;
           FLOAT Distance;
-          CHILD_CHUNKS ChildChunks;     
+          CHILD_NODES ChildNodes;     
         }; break;
 
         // LOD Switch
@@ -307,7 +308,7 @@ UINT chunkTree(UINT ChildCount) {
             FLOAT Z; 
           } POs; //??
           FLOAT Distance;     
-          CHILD_CHUNKS ChildChunks;         
+          CHILD_NODES ChildNodes;         
         }; break;
 
         // only in Hard Truck 1
@@ -322,7 +323,7 @@ UINT chunkTree(UINT ChildCount) {
           FLOAT Unknown;
           FLOAT Unknown;
           FLOAT Unknown;  
-          CHILD_CHUNKS ChildChunks;              
+          CHILD_NODES ChildNodes;              
         }; break;
 
         case 12: {
@@ -333,7 +334,7 @@ UINT chunkTree(UINT ChildCount) {
           FLOAT Unknown; 
           UINT Unknown;
           UINT Unknown;      
-          CHILD_CHUNKS ChildChunks;            
+          CHILD_NODES ChildNodes;            
         }; break;
 
         case 13: {
@@ -412,16 +413,16 @@ UINT chunkTree(UINT ChildCount) {
           FLOAT Empty; // 0
         }; break;
 
-        // attachement
+        // RefContainer
         case 18: {
           BOUNDING_SPHERE Sphere ;  
           char MatrixName[32];
-          char AttachementObjectName[32];
+          char RefObjectName[32];
         }; break;
     
         // container, used for rooms
         case 19: {
-          CHILD_CHUNKS ChildChunks;   
+          CHILD_NODES ChildNodes;   
         }; break;
 
         // 2d collision vertex data
@@ -439,7 +440,7 @@ UINT chunkTree(UINT ChildCount) {
           BOUNDING_SPHERE Sphere; 
           UINT Count;
           UINT Unknown;
-          CHILD_CHUNKS ChildChunks;    
+          CHILD_NODES ChildNodes;    
         }; break;
 
         // 3d collision object properties and geometry
@@ -461,9 +462,9 @@ UINT chunkTree(UINT ChildCount) {
 
         // matrix
         case 24: {
-          TRANSFORMATION_MATRIX TM;
+          MATRIX TM;
           BOOL isShown; // 1 - show attached object, 0 - hide
-          CHILD_CHUNKS ChildChunks;      
+          CHILD_NODES ChildNodes;      
         }; break;
 
         // Sound
@@ -526,14 +527,14 @@ UINT chunkTree(UINT ChildCount) {
           FLOAT Unknown; 
           if (type != 3)
             FLOAT Unknown;           
-          CHILD_CHUNKS ChildChunks;      
+          CHILD_NODES ChildNodes;      
         }; break;
 
         // Portals
         case 30: {
           BOUNDING_SPHERE Sphere ; 
           char ConnectedRoomName[32];
-          VECTOR_3F P1; // left down point
+          VECTOR_3F P1; // left bottom point
           VECTOR_3F P2; // up right point                 
         }; break;
 
@@ -587,7 +588,7 @@ UINT chunkTree(UINT ChildCount) {
             FLOAT Unknown;
           } COLOR;
  
-          CHILD_CHUNKS ChildChunks;  
+          CHILD_NODES ChildNodes;  
   
         }; break;   
 
@@ -623,21 +624,21 @@ UINT chunkTree(UINT ChildCount) {
             if (type == 50) {
                 struct {    
                   UINT Index; // vertex index 
-                  // normals??  
-                  FLOAT Unknown; 
-                  FLOAT Unknown; 
-                  FLOAT Unknown;    
-                  FLOAT Unknown; 
-                  FLOAT Unknown;
+                  VECTOR_2F UV;
+                  VECTOR_3F FaceNormal;
                 } FACE_VERTEX_ATTRIBUTES[IndexCount];
             } else
-            if (type == 49) {
-                struct {     
+            if (type == 49) { 
+                struct {  
                   UINT Index;
                   FLOAT Unknown;
                 } FACE_VERTEX_ATTRIBUTES[IndexCount];
-            } else          
-            if (type == 1 || type == 0 || type == 16 || type == 17) {
+            } if (type == 48) { 
+                struct {    
+                  UINT Index;
+                  VECTOR_3F FaceNormal;
+                } FACE_VERTEX_ATTRIBUTES[IndexCount];
+            } else if (type == 1 || type == 0 || type == 16 || type == 17) {
                 struct {
                   UINT I1;
                   UINT I2;
@@ -647,18 +648,9 @@ UINT chunkTree(UINT ChildCount) {
             if (type == 2 || type == 3) {
                 struct {     
                   UINT Index;
-                  FLOAT Unknown; // 0, 1
-                  FLOAT Unknown; // 0, 1
+                  VECTOR_2F UV;
                 } FACE_VERTEX_ATTRIBUTES[IndexCount];
-            } else {
-                struct {     
-                  UINT Index;
-                  // normal ??
-                  FLOAT Unknown;
-                  FLOAT Unknown;
-                  FLOAT Unknown;
-                } FACE_VERTEX_ATTRIBUTES[IndexCount];
-            }; 
+            }
           } POLYGON[PolygonCount] <optimize=false>;             
         }; break;
  
@@ -680,7 +672,7 @@ UINT chunkTree(UINT ChildCount) {
               VECTOR_2F UV;
               FLOAT Unknown;
             } VERTEX_ATTRIBUTES[VertexCount];
-          CHILD_CHUNKS ChildChunks;    
+          CHILD_NODES ChildNodes;    
         }; break;   
 
     
@@ -703,6 +695,7 @@ UINT chunkTree(UINT ChildCount) {
             }; 
             if (type == 258 || type == 515) 
             { 
+              //drhdfhdhf();
               VECTOR_3F Coordinates;
               VECTOR_2F UV;
               FLOAT Unknown;  
@@ -719,16 +712,15 @@ UINT chunkTree(UINT ChildCount) {
             };                   
             if (type == 3) 
             {
+             //bhl();
               VECTOR_3F Coordinates;
-              VECTOR_3F Normal;                 
+              VECTOR_3F UVW;                 
             };
-          } VERTEX1 <optimize=false>; 
-          typedef struct (int arraySize) {
-            VERTEX1 array[arraySize] <optimize=false>;
-          } VERTEXES;         
-          VERTEXES VertexArray(VertexCount) <name="Vertex data">;
+          } VERTEX_DATA <optimize=false>;  
+        
+          VERTEX_DATA VertexArray[VertexCount] <name="Vertex data">;
    
-          CHILD_CHUNKS ChildChunks;    
+          CHILD_NODES ChildNodes;    
       }; break;
 
       case 39: {
@@ -742,7 +734,7 @@ UINT chunkTree(UINT ChildCount) {
         FLOAT Unknown;
         FLOAT Unknown;
       
-        CHILD_CHUNKS ChildChunks;          
+        CHILD_NODES ChildNodes;          
       }; break;
 
       case 40: {
@@ -787,20 +779,20 @@ string ChunkName(CHUNKS &chunks) {
       case 2: return "Switch?? (id 2): " + chunks.array.HEADER.String; break;
       case 3: return "Goods (id 3): " + chunks.array.HEADER.String; break;
       case 4: return "Road/Truck Object (id 4): " + chunks.array.HEADER.String; break;
-      case 5: return "3d Object Group (id 5): " + chunks.array.HEADER.String; break;
+      case 5: return "NodeContainer (id 5): " + chunks.array.HEADER.String; break;
       case 6: return "Vertex Data (id 6): " + chunks.array.HEADER.String; break;
       case 7: return "Vertex Data (id 7): " + chunks.array.HEADER.String; break;
       case 8: return "Face Data (id 8): " + chunks.array.HEADER.String; break;
       case 9: return "Trigger parameters (id 9): " + chunks.array.HEADER.String; break;
-      case 10: return "LOD (id 10): " + chunks.array.HEADER.String; break;
+      case 10: return "NodeLevelOfDetail (id 10): " + chunks.array.HEADER.String; break;
       case 11: return "Unknown (id 11): " + chunks.array.HEADER.String; break;
       case 12: return "Collision ??: " + chunks.array.HEADER.String; break;
       case 13: return "Trigger object (id 13): " + chunks.array.HEADER.String; break;
       case 14: return "Unknown object (id 14): " + chunks.array.HEADER.String; break;
       case 16: return "Unknown object (id 16): " + chunks.array.HEADER.String; break;
       case 17: return "Unknown object (id 17): " + chunks.array.HEADER.String; break;
-      case 18: return "Attachement (id 18): " + chunks.array.HEADER.String; break;
-      case 19: return "Room Group (id 19): " + chunks.array.HEADER.String; break;
+      case 18: return "RefContainer (id 18): " + chunks.array.HEADER.String; break;
+      case 19: return "NodeRoom (id 19): " + chunks.array.HEADER.String; break;
       case 20: return "Collision (id 20): " + chunks.array.HEADER.String; break;
       case 21: return "Switch Group (id 21): " + chunks.array.HEADER.String; break;
       case 23: return "Collision (id 23): " + chunks.array.HEADER.String; break;
@@ -810,7 +802,7 @@ string ChunkName(CHUNKS &chunks) {
       case 30: return "Portal object (id 30): " + chunks.array.HEADER.String; break;
       case 33: return "Light object (id 33): " + chunks.array.HEADER.String; break;
       case 35: return "Face data (id 35): " + chunks.array.HEADER.String; break;
-      case 37: return "Vertex data (id 37): " + chunks.array.HEADER.String; break;
+      case 37: return "ContainerVertex (id 37): " + chunks.array.HEADER.String; break;
       case 40: return "Special object (id 40): " + chunks.array.HEADER.String; 
       default: return "Chunk: (id " + IntToStr(chunks.array.HEADER.ID) + "): " + chunks.array.HEADER.String; 
   } else 
@@ -825,20 +817,20 @@ string getChunkName(CH &chunk) {
       case 2: return "Switch?? (id 2): " + chunk.HEADER.String; break;
       case 3: return "Goods (id 3): " + chunk.HEADER.String; break;
       case 4: return "Road/Truck Object (id 4): " + chunk.HEADER.String; break;
-      case 5: return "3d Object Group(id 5): " + chunk.HEADER.String; break;
+      case 5: return "NodeContainer(id 5): " + chunk.HEADER.String; break;
       case 6: return "Vertex Data(id 6): " + chunk.HEADER.String; break;
       case 7: return "Vertex Data(id 7): " + chunk.HEADER.String; break;
       case 8: return "Face Data(id 8): " + chunk.HEADER.String; break;
       case 9: return "Trigger (id 9): " + chunk.HEADER.String; break;
-      case 10: return "LOD (id 10): " + chunk.HEADER.String; break;
+      case 10: return "NodeLevelOfDetail (id 10): " + chunk.HEADER.String; break;
       case 11: return "Unknown: " + chunk.HEADER.String; break;
       case 12: return "Collision??: " + chunk.HEADER.String; break;
       case 13: return "Trigger object (id 13): " + chunk.HEADER.String; break;
       case 14: return "Object object (id 14): " + chunk.HEADER.String; break;
       case 16: return "Object object (id 16): " + chunk.HEADER.String; break;
       case 17: return "Object object (id 17): " + chunk.HEADER.String; break;
-      case 18: return "Embeded object (id 18): " + chunk.HEADER.String; break;
-      case 19: return "Room (id 19): " + chunk.HEADER.String; break;
+      case 18: return "RefContainer (id 18): " + chunk.HEADER.String; break;
+      case 19: return "NodeRoom (id 19): " + chunk.HEADER.String; break;
       case 20: return "Collision 2D (id 20): " + chunk.HEADER.String; break;
       case 21: return "Switch Group (id 21): " + chunk.HEADER.String; break;
       case 23: return "Collision 3D (id 23): " + chunk.HEADER.String; break;
@@ -848,7 +840,7 @@ string getChunkName(CH &chunk) {
       case 30: return "Portal object (id 30): " + chunk.HEADER.String; break;
       case 33: return "Light object (id 33): " + chunk.HEADER.String; break;
       case 35: return "Face data (id 35): " + chunk.HEADER.String; break;
-      case 37: return "Vertex data (id 37): " + chunk.HEADER.String; break;
+      case 37: return "ContainerVertex (id 37): " + chunk.HEADER.String; break;
       case 40: return "Special object (id 40): " + chunk.HEADER.String; break;
       default: return "Chunk: (id " + IntToStr(chunk.HEADER.ID) + "): "  + chunk.HEADER.String;
   }
@@ -869,5 +861,5 @@ struct {
        return 1;
     };
   };
-} Chunks <name="Data Chunks">;
+} Chunks <name="Nodes">;
  

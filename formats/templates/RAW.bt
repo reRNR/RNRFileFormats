@@ -12,15 +12,8 @@
 //
 //------------------------------------------------
 
-local uint width = 257, height = 257;
+local uint width = 257, height = 257, pointDataSize = 2;
 
 struct {
-  struct { 
-    struct {
-      struct {
-        UBYTE HeightValue;
-        FSkip(1);  
-      } POINT[width];
-    } ROW;
-  } COL[height];
+  BYTE Data[width*height*pointDataSize];
 } HEIGHTMAP;

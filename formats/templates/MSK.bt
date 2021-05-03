@@ -10,11 +10,30 @@
 // 
 //------------------------------------------------
 
-local uint i, count, size, number = 0;
+local uint line, col;
+const int PFRM_FOURCC = 1297237584;
+const int ENDR_FOURCC = 1380208197;
 
-char Magic[4]; // signature
-UINT16 Width;
-UINT16 Height;
+typedef struct {
+  char ENDR[4];
+  UINT SectionSize;  
+} ENDR;
+
+typedef struct {
+  char PFRM[4];
+  UINT Size;
+  UINT RedMask;
+  UINT GreenMask;
+  UINT BlueMask;
+  UINT AlphaMask;
+  BYTE Unknown[12];          
+} PFRM; 
+
+struct {
+  char Magic[4]; // signature
+  UINT16 Width;
+  UINT16 Height;
+} HEADER <name="Header">;
 
 struct {
   BYTE R;
@@ -22,71 +41,39 @@ struct {
   BYTE B;
 } PALETTE[256];
 
- typedef struct {
-    UBYTE Size;
-    if (Size == 0) Printf("123  ");
-    if (Magic != "MS16")
-    { 
-      if  (Size <= 127) 
-      { 
-        UBYTE Block[Size];  
-        number += Size;
-      }
-      else
-      {
-        number += Size - 128;
-      }; 
-    }
-    else  
-    {
-      if (Size == 80) 
-      {
-        FSkip(-1);
-        char PFRM[4];
-        if (PFRM == "PFRM") 
-        {
-          UINT Size;
-          UINT RedMask;
-          UINT GreenMask;
-          UINT BlueMask;
-          UINT AlphaMask;
-          BYTE Unknown[20];          
-          break;
-        };
-      };
-      if  (Size <= 127) 
-      { 
-        UINT16 Block[Size];  
-        number += Size;
-      }
-      else
-      {
-        number += Size - 128;
-      }; 
-    };
-  } BLOCK <name=getBlockName>;
-
 struct {
-  while (!FEof())
-    BLOCK DataBlock;
+  while (1)
+  {
+    struct {
+      UBYTE Length;
+      if  (Length <= 127)
+      {
+        if (HEADER.Magic != "MS16") 
+          UBYTE RawData[Length];
+        else  
+          UINT16 RawData[Length]; 
+
+        col += Length;
+      } else
+        col += Length - 128;  
+    } IMAGE_DATA_BLOCK;
+
+    if (col >= HEADER.Width) 
+    {
+        col = 0;
+        line += 1;
+    }
+ 
+    if (line >= HEADER.Height) 
+      break;
+  }
 } DATA;
 
-string getBlockName(BLOCK &block)
-{
-  if (Magic != "MS16")
+while (!FEof())
+  switch (ReadUInt(FTell())) 
   {
-    if  (block.Size <= 127) 
-      return "raw data";
-    else
-      return "black pixels" ;  
-  } 
-  else
-  {
-    if (exists(block.PFRM))  
-      return "end";
-    if  (block.Size <= 127) 
-    return "raw data";
-      else
-      return "black pixels" ; 
-  }   
-}
+    case PFRM_FOURCC: 
+      PFRM pfrm; break;
+    case ENDR_FOURCC: 
+      ENDR endr; break;
+  }

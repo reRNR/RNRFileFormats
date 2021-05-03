@@ -97,7 +97,7 @@ while (!FEof())
               {  
                  struct {        
                    UINT SectionSize;
-                   UINT Unknown;
+                   UINT Type;
                  } FLAG; 
                  pos += 8; 
               };
@@ -142,7 +142,7 @@ while (!FEof())
               UINT SectionSize;
               UINT Unknown;
               DOUBLE Unknown;
-              UINT Unknown; 
+              UINT LaneCount; // 2 - two lanes
             } ATTR;
             pos += 28; 
             while (pos < SegDataSize)
