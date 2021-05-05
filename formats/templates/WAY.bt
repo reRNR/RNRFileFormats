@@ -12,183 +12,108 @@
 //
 //------------------------------------------------
 
-local uchar i[4];
-local uint pos = 0;
-local float padding = 0;
-
-typedef enum <char> {
-  MNAM, // = Name
-  GDAT, //
-  GROM,
-  RNAM, // = Room Name
-  RNOD, // = Room Node
-  NNAM, // = node name
-  POSN, // = position
-  WDTH, // = width
-  RSEG, // = Room Segment
-  ATTR, // = Attributes
-  VDAT, //
-  RTEN, // ??
-  FLAG, //
+typedef enum <uint> {
+  MNAM = 0x4D414E4D, // module name
+  GDAT = 0x54414447, // data
+  GROM = 0x4D4F5247, // room
+  RNAM = 0x4D414E52, // room Name
+  RNOD = 0x444F4E52, // = room Node
+  NNAM = 0x4D414E4E, // = node name
+  POSN = 0x4E534F50, // = position
+  WDTH = 0x48544457, // = width
+  RSEG = 0x47455352, // = room segment
+  ATTR = 0x52545441, // = attributes
+  VDAT = 0x54414456, // segment points
+  RTEN = 0x4E455452, // name
+  FLAG = 0x47414c46 , //
+  ORTN = 0x4E54524F
 } IDENTIFIER;
 
+typedef struct {
+  DOUBLE X;
+  DOUBLE Y;
+  DOUBLE Z;
+} VECTOR3F8;
 
-struct {
-  char WTWR[4] <name="WTWR signature">;
-  UINT DataSize; // File size - 8
-  IDENTIFIER id1[4];
-  UINT Count; //
-  char RegionShortName[4] <name="Region Short Name">;
-  IDENTIFIER id12[4];  
-  UINT DataSize; // File size - Header size
-} Header <name="File Header">;
+char WTWR[4] <name="WTWR signature">;
+UINT len;
 
-while (!FEof()) 
-{ 
-  struct {
-    IDENTIFIER ID[4];
-    if (ID == "GROM")
-    {
-      struct {
-        UINT ChunkSize; //
-        IDENTIFIER id4[4];
-        struct {
-          UINT NameLengh; //
-          char Name[12]; 
-        } NAME <name="Room Name">;  
-      } CHUNK_HEADER <name="Chunk Header">;
+int chunks(uint size) {
+  local uint pos;
 
-      while (!FEof())  
-      {     
-        ReadBytes(i, FTell(), 4); 
-        if (i == "GROM") break;
-        struct { 
-          IDENTIFIER id[4];
-        } PID;
-        if (PID.id == "RNOD") 
-        {
-          pos = 0;  
-          struct {
-            UINT NodDataSize; 
-            struct {
-              IDENTIFIER id[4];
-              UINT Lengh;
-              padding = -Lengh & 3;
-              char Name[Lengh + padding];
-              pos += Lengh + padding + 8;
-            } NNAM;              
-            while (pos < NodDataSize)
-            {
-              struct {
-                IDENTIFIER id[4];
-              } IS;
-              pos += 4;
-              if (IS.id == "POSN") 
-              { 
-                struct {
-                  UINT SectionSize;
-                  DOUBLE X;
-                  DOUBLE Y;
-                  DOUBLE Z;
-                } POSN;
-                pos += 28; 
-              }; 
-              if (IS.id == "FLAG")
-              {  
-                 struct {        
-                   UINT SectionSize;
-                   UINT Type;
-                 } FLAG; 
-                 pos += 8; 
-              };
-              if (IS.id == "ORTN")
-              {
-                struct {        
-                  UINT SectionSize;
-                  struct {
-                    DOUBLE X;
-                    DOUBLE Y;
-                    DOUBLE Z;
-                  } X;
-                  struct {
-                    DOUBLE X;
-                    DOUBLE Y;
-                    DOUBLE Z;
-                  } Y;
-                  struct {
-                    DOUBLE X;
-                    DOUBLE Y;
-                    DOUBLE Z;
-                  } Z;
-                  struct {
-                    DOUBLE X;
-                    DOUBLE Y;
-                     DOUBLE Z;
-                  } Pos;
-                } ORTN; 
-                pos += 100; 
-              };
-            };   
-          } RNOD <name="RNOD">;
-        };
+  while (!FEof()) 
+  { 
+    struct (uint size, uint ofc) {
+      local uint pos = ofc;
 
-        if (PID.id == "RSEG") 
-        {
-          pos = 0;  
-          struct {
-            UINT SegDataSize;  
-            struct {
-              IDENTIFIER id[4];
-              UINT SectionSize;
-              UINT Unknown;
-              DOUBLE Unknown;
-              UINT LaneCount; // 2 - two lanes
-            } ATTR;
-            pos += 28; 
-            while (pos < SegDataSize)
-            {
-              struct {
-                IDENTIFIER id[4];
-              } IS;
-              pos += 4;
-              if (IS.id == "VDAT")
-              {
-                struct {
-                  UINT DataSize;
-                  UINT Count;
-                  struct { 
-                    DOUBLE X;
-                    DOUBLE Y;
-                    DOUBLE Z;
-                  } P[Count];  
-                  pos += DataSize + 4;
-                } VDAT;
-              }; 
-              if (IS.id == "WDTH")
-              {
-                struct {
-                  UINT SectionSize;
-                  DOUBLE Unknown;
-                  DOUBLE Unknown; 
-                } WDTH;
-                pos += 24;
-              };
-              if (IS.id == "RTEN")
-              {
-                struct {
-                  UINT Unknown;
-                  UCHAR Name[4];
-                  UINT Unknown; 
-                } RTEN;
-                pos += 16; 
-              };   
-                      
-            };
-          } RNOD <name="RSEG">;
-        };
+      IDENTIFIER id; 
+      UINT len;  
+
+      pos = len + (-len & 3) + 8; 
+
+      switch (id) 
+      {
+        case NNAM:
+        case RNAM:
+        case MNAM:
+          char name[len] <name="Module short Name">;
+          break;
+
+        case GROM:
+        case GDAT:           
+        case RNOD:         
+        case RSEG:
+          chunks(len);
+          break;
+
+        case ATTR:
+          UINT Unknown;
+          DOUBLE Unknown;
+          UINT LaneCount; // 2 - two lanes
+          break;
+
+        case ORTN:
+          VECTOR3F8 X;
+          VECTOR3F8 Y;
+          VECTOR3F8 Z;
+          VECTOR3F8 Pos;
+          break; 
+          
+        case FLAG:
+          UINT Unknown;
+          break; 
+
+        case WDTH: 
+          DOUBLE X;
+          DOUBLE Y;
+          break;
+
+        case POSN: 
+          VECTOR3F8 Point;
+          break;
+
+        case VDAT: 
+          UINT Count;
+          VECTOR3F8 POINT [Count]; 
+          break; 
+         
+        case RTEN: 
+          UCHAR Name[len];             
+          break;
       };
-    };
-  } GROM;
+
+      if (-len & 3)
+        struct {
+          BYTE EmptyBytes[(-len & 3)];
+        } PADDING;   
+    } CHUNK(size, pos);
+
+    pos += CHUNK.pos;
+    if (pos >= size)
+      break;
+  } 
+
+  return 0;
 }
 
-
+chunks(len);
