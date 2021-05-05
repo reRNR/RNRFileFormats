@@ -105,13 +105,11 @@ typedef enum <uint> {
 
 struct {
   char B3D[4] <name="b3D signature">;
-  struct {
-    UINT FileSize; // 1/4*filesize
-    UINT MatListOffset; // 6 (1/4*24)
-    UINT MatListDataSize; // 1/4*(materials list data)
-    UINT DataChunksOffset; // 1/4*(materials list data + file header)
-    UINT NodesSectionSize; // 1/4*(datasize)
-  } DataSizes <name = "Data sizes">;
+  UINT FileSize; // 1/4*filesize
+  UINT MatListOffset; // 6 (1/4*24)
+  UINT MatListSectionSize; // 1/4*(materials list data)
+  UINT NodesOffset; // 1/4*(materials list data + file header)
+  UINT NodesSectionSize; // 1/4*(nodes data size)
 } HEADER <name="File Header">;
 
 struct {
