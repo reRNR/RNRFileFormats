@@ -59,7 +59,7 @@ Hard Truck 1 (1998), Hard Truck 2 King of the Road 1.3 and RignRoll (2010) games
 #### Hard Truck 1 (1998)
 
 | № | Format/Ext  | Template (010 Editor) |  Kaitai struct | Description   |
-| :-- | :------- | :-- | :-- | 
+| :-- | :------- | :-- | :-- | :-- |
 |  **1**  |  .b3D**  | [b3D.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) |  | Game logic and 3D objects |
 |  **2**  | .RMP* |  [RES.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/RES.bt) | | Resource archive: sounds, textures | 
 |  **3**  | .PLM | [PLM.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/PLM.bt) | [hard_truck_2_plm.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_plm.ksy)  |  Palette | 
@@ -71,7 +71,7 @@ Hard Truck 1 (1998), Hard Truck 2 King of the Road 1.3 and RignRoll (2010) games
 
 #### Hard Truck 2 King of the Road (2002)
 | № | Format/Ext |  Template (010 Editor) | Kaitai struct |  Description   |
-| :-- | :------- |  :-- | :-- |
+| :-- | :------- |  :-- | :-- | :-- |
 |  **1**  | .b3D | [b3D.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) | | Game logic and 3D objects |
 |  **2**  | .MSK |  [MSK.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/MSK.bt) | [hard_truck_2_msk.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_msk.ksy)  | Mask files stored in .RES | 
 |  **3**  | .PLM |  [PLM.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/PLM.bt) | [hard_truck_2_plm.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_plm.ksy) | Palette file in .RES | 
