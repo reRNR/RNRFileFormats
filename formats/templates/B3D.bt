@@ -135,15 +135,9 @@ UINT chunkTree(UINT ChildCount) {
   } CHILD_NODES <name="Child nodes">;
 
   typedef struct {
-    while (true) { 
-      ID = ReadInt(FTell());    
-      if (ID == 444)
-      {
-        IDENTIFIER Identifier <name="Group Chunk", bgcolor=0xFF00FF>;
-        ++Start4;
-      }
-      else break;
-    };
+    while (ReadInt(FTell()) == 444)     
+      IDENTIFIER id <name="Group Chunk", bgcolor=0xFF00FF>;
+
     IDENTIFIER Identifier <name="Begin Chunk">;
     struct {
       char String[32] <name="Name">;
@@ -167,11 +161,10 @@ UINT chunkTree(UINT ChildCount) {
           FLOAT Unknown; // 1
           FLOAT Unknown; // 0          
         }; break;
-        // unused
         case 1: 
         {
-          char Name1[32];
-          char Name2[32];
+          char RootNodeName[32];
+          char RoomName[32];
         }; break;
 
         // some kind of trigger/switch
@@ -203,11 +196,13 @@ UINT chunkTree(UINT ChildCount) {
           CHILD_NODES ChildNodes; 
         }; break;
     
-        // container with child nodes
+        // container
         case 5: 
         { 
           BOUNDING_SPHERE Sphere; 
-          char ContainerName[32] <name="Name">; // name 
+          char ConnectedNodeName[32] <name="Name">; // name
+          //if (ConnectedNodeName[0] > 0) 
+           // hdfshdf();            
 
           CHILD_NODES ChildNodes;      
         }; break;
@@ -248,10 +243,6 @@ UINT chunkTree(UINT ChildCount) {
             UINT Unknown; // 32767
             UINT MaterialIndex;
             UINT Count;
-
-            //if (Count > 4) {
-             // Printf("%d ", Count); 
-           // };
 
             struct { 
               if (type == 3 || type == 131 || type == 2) 
@@ -619,6 +610,12 @@ UINT chunkTree(UINT ChildCount) {
             UINT MaterialIndex; 
             UINT IndexCount; 
 
+            if (type == 51) {
+                struct {    
+                  UINT Index; // vertex index 
+                  VECTOR_3F FaceNormal;
+                } FACE_VERTEX_ATTRIBUTES[IndexCount];
+            } else
             if (type == 50) {
                 struct {    
                   UINT Index; // vertex index 
@@ -747,16 +744,8 @@ UINT chunkTree(UINT ChildCount) {
         FLOAT Unknown1[Count];   
       }; break;
     }; 
-    // } PROPERTIES <name="Properties">;
-    while (true) { 
-      ID = ReadInt(FTell());    
-      if (ID == 444)
-      {  
-        IDENTIFIER Identifier <name="Group_Block", bgcolor=0xFFFF00>;
-        ++End4;
-      }
-      else break;
-    };
+    while (ReadInt(FTell()) == 444)     
+      IDENTIFIER id <name="Group Chunk", bgcolor=0xFF00FF>;
     IDENTIFIER Identifier <name="End Chunk">;
    //
   } CH <name=getChunkName>;
@@ -850,12 +839,9 @@ struct {
   IDENTIFIER Begin <name="BEGIN">;
   while (chunkTree(1) == 0) 
   {
-    ID = ReadInt(FTell());
-    // pass chunks
-    if (ID == 222) 
+    if (ReadInt(FTell()) == 222) 
     {     
        IDENTIFIER End <name="END">;  
-       //Printf("%d, %d ", Start4, End4);  
        return 1;
     };
   };
