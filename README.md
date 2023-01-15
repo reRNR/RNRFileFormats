@@ -22,10 +22,10 @@
 
 | № | Формат | Шаблон (010 Editor) | Kaitai struct | Описание |
 | :-- | :------- | :-- |  :-- | :-- |
-|  **1**  |  .b3D**  |   [b3D.bt](https://github.com/AlexKimov/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) | | 3D объекты и объекты игровой логики (модели коллизий, порталы, объекты освещения и т.п.) |
+|  **1**  |  .b3D**  |   [b3D.bt](https://github.com/AlexKimov/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) | [hard_truck_2_b3d.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_b3d.ksy) | 3D объекты и объекты игровой логики (модели коллизий, порталы, объекты освещения и т.п.) |
 |  **2**  | .MSK |  [MSK.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/MSK.bt) | [hard_truck_2_msk.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_msk.ksy) | 8 битные файлы масок, хранятся в архиве .RMP | 
 |  **3**  | .PLM |  [PLM.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/PLM.bt) | [hard_truck_2_plm.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_plm.ksy) | Палитра, хранится в архиве RMP | 
-|  **4**  | .RMP* | [RES.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/RES.bt) |  | Архив ресурсов (звуки, текстуры) | 
+|  **4**  | .RMP* | [RES.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/RES.bt) | [hard_truck_2_res_rmp.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_res_rmp.ksy) | 3D объекты и объекты игровой логики (модели коллизий, порталы, объекты освещения и т.п.) | Архив ресурсов (звуки, текстуры) | 
 | **5**  | .TXR | [TXR.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/TXR.bt) | [hard_truck_2_txr.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_txr.ksy) | Текстура 8 бит | 
 
     * Формат аналогичен формату RES из второй части игры (Дальнобойщики 2)
@@ -35,11 +35,11 @@
 
 | № | Формат | Шаблон (010 Editor) | Kaitai struct | О формате |
 | :-- | :------- | :-- | :-- | :-- |
-|  **1**  |  .b3D  |   [b3D.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) | |  3D объекты и объекты игровой логики (модели коллизий, порталы, объекты освещения и т.п.) |
+|  **1**  |  .b3D  |   [b3D.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/B3D.bt) | [hard_truck_2_msk.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_msk.ksy) |  3D объекты и объекты игровой логики (модели коллизий, порталы, объекты освещения и т.п.) |
 |  **2**  | .MSK |  [MSK.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/MSK.bt) | [hard_truck_2_msk.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_msk.ksy) |  8/16 битные файлы масок, хранятся в архиве .RES | 
 |  **3**  | .PLM |  [PLM.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/PLM.bt) | [hard_truck_2_plm.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_plm.ksy) |  Палитра, хранится в архиве .RES | 
 |  **4**  | .RAW |  | [hard_truck_2_raw.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_raw.ksy) |  Карты высот | 
-|  **5**  | .RES |  [RES.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/RES.bt) | |  Архив ресурсов (звуки, текстуры) | 
+|  **5**  | .RES |  [RES.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/RES.bt) | [hard_truck_2_res_rmp.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_res_rmp.ksy) |  Архив ресурсов (звуки, текстуры) | 
 |  **6**  | .TECH | [TECH.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/TECH.bt)  | [hard_truck_2_tech.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_tech.ksy) |  Параметры транспортных средств | 
 |  **7**  | .TXR |  [TXR.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/TXR.bt) | [hard_truck_2_txr.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_txr.ksy) |   Текстура | 
 |  **8**  | .WAY | [WAY.bt](https://github.com/reRNR/RNRFileFormats/tree/master/formats/templates/WAY.bt) | [hard_truck_2_way.ksy](https://github.com/reRNR/RNRFileFormats/blob/master/formats/ksy/hard_truck_2_way.ksy) |  Пути для транспорта под управлением ИИ | 
