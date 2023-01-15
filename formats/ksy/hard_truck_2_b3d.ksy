@@ -702,12 +702,12 @@ types:
 
   b_34:
     types:
-      unk_3ff:
+      unk_3fi:
         seq:
         - id: unk_3f
           type: point
         - id: unk_i
-          type: f4
+          type: u4
     seq:
     - id: bound1
       type: sphere
@@ -716,7 +716,7 @@ types:
     - id: unk_count
       type: u4
     - id: unk_floats
-      type: unk_3ff
+      type: unk_3fi
       repeat: expr
       repeat-expr: unk_count
 
